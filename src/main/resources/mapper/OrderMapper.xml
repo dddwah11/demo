@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.demos.mapper.OrderMapper">
+
+    <select id="searchOne" resultType="com.example.demo.demos.controller.VO.StatisticsVO">
+        select
+            DATE(create_time) as createTime,
+            count(*) as total,
+            round(sum(case when is_overdue = 1 then 1 else 0 end) / count(*) * 100,2) as rate
+        from `order`
+        where create_time between #{startDate} and #{endDate}
+        group by create_time
+        order by create_time
+    </select>
+    <select id="searchTwo" resultType="com.example.demo.demos.controller.VO.StatisticsVO">
+        select
+            d.dept_name as deptName,
+            count(*) as total,
+            round( sum(case when o.is_overdue = 1 then 1 else 0 end) / count(*) *100,2) as rate
+        from `order` o
+                 left JOIN dept d on o.handle_dept_id = d.dept_id
+        where o.create_time between #{startDate} and #{endDate}
+        GROUP BY d.dept_id
+    </select>
+</mapper>
